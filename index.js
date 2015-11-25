@@ -32,6 +32,15 @@ function sendNotificationIfPeopleSubscribed(service, options){
     });
   }
 }
+var servicelink = function(service){
+  var baseUrl = process.env.WATCHMEN_BASE_URL;
+  var route = 'services/'+service.id+'/view';
+  if(!baseUrl) { return '';}
+  if(!_.endsWith(baseUrl,'/')){
+    route = '/'+route;
+  }
+  return '<br/><br/><a href="'+baseUrl+route+'">See more data...</a>';
+}
 
 var eventHandlers = {
 
@@ -45,7 +54,7 @@ var eventHandlers = {
     debug('triggering "onNewOutage" notification');
     sendNotificationIfPeopleSubscribed(service, {
       title: EMAIL_SUBJECT_PREFIX + ' ' + service.name + ' is down!',
-      body: service.name + ' is down!. Reason: ' + JSON.stringify(outage.error)
+      body: service.name + ' is down!. Reason: ' + JSON.stringify(outage.error) + servicelink(service)
     })
   },
 
@@ -60,7 +69,7 @@ var eventHandlers = {
     sendNotificationIfPeopleSubscribed(service, {
       title: EMAIL_SUBJECT_PREFIX + ' ' + service.name + ' is back!',
       body: service.name + ' down for ' + moment.duration(lastOutage.downtime).humanize() +
-      '. Error: ' + JSON.stringify(lastOutage.error)
+      '. Error: ' + JSON.stringify(lastOutage.error)  + servicelink(service)
     });
   }
 
